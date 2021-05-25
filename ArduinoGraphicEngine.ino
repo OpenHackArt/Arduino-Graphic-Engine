@@ -3,7 +3,6 @@
 #include <ILI9488.h>
 #include "color.h"
 #include "geometry.h"
-#include "data_structure.h"
 #include "math.h"
 
 #define TFT_CS 7
@@ -25,10 +24,8 @@ ILI9488 tft = ILI9488(TFT_CS, TFT_DC, TFT_RST);
 float ticks = 0;
 unsigned int loops = 0;
 
-int total_vertex = 0;
 Matrix4f m_world;
-float projected_vertex[MAX_VERTEX][2]; // (x, y) screen space
-unsigned short render_mode = 0;        // 0 - orthogonal | 1 - perspective
+unsigned short render_mode = 1; // 0 - orthogonal | 1 - perspective
 
 void mode_ui(const uint16_t color)
 {
@@ -48,11 +45,22 @@ void mode_ui(const uint16_t color)
   tft.println(MAX_VERTEX);
 }
 
-void draw_vertex(const uint16_t color)
+void draw_vertex(int vertex_cnts, Vector2f *projected, const uint16_t color)
 {
-  for (int i = 0; i < total_vertex; i++)
+  for (int i = 0; i < vertex_cnts; i++)
   {
-    tft.drawPixel(projected_vertex[i][0], projected_vertex[i][1], color);
+    tft.drawPixel(projected[i].x, projected[i].y, color);
+  }
+}
+
+void draw_triangles(int vertex_cnts, Vector2f *projected, const Vector3i *tris, const uint16_t color)
+{
+  for (int i = 0; i < vertex_cnts; i++)
+  {
+    // draw triangle edges - 0 -> 1 -> 2 -> 0
+    tft.drawLine(projected[tris[i].x].x, projected[tris[i].x].y, projected[tris[i].y].x, projected[tris[i].y].y, color);
+    tft.drawLine(projected[tris[i].y].x, projected[tris[i].y].y, projected[tris[i].z].x, projected[tris[i].z].y, color);
+    tft.drawLine(projected[tris[i].z].x, projected[tris[i].z].y, projected[tris[i].x].x, projected[tris[i].x].y, color);
   }
 }
 
@@ -82,30 +90,29 @@ void setup()
   tft.fillScreen(WHITE);
   mode_ui(BLACK);
   ticks = millis();
+  m_world = mMultiply(mScale(30), m_world);
 }
 
 void loop(void)
 {
+  cube obj;
   while (millis() > ticks)
   {
     // m_world = mMultiply(mRotateX(10), m_world);
-    // m_world = mMultiply(mScale(10), m_world);
-    cube obj;
-    total_vertex += obj.vertex_counts;
-    Vector3f p;
+
     // for future, z-buffer
     for (int i = 0; i < obj.vertex_counts; i++)
     {
-
       // no camera
       // project to screen space directly
       Vector3f v = m_mul_v(m_world, obj.vertex_pos[i]);
-      projected_vertex[i][0] = (FOV * v.x) / (FOV * v.z) + HALF_SCREEN_WIDTH;
-      projected_vertex[i][1] = (FOV * v.y) / (FOV * v.z) + HALF_SCREEN_HEIGHT;
+      obj.projected_vertex[i].x = (FOV * v.x) / (FOV + v.z) + HALF_SCREEN_WIDTH;
+      obj.projected_vertex[i].y = (FOV * v.y) / (FOV + v.z) + HALF_SCREEN_HEIGHT;
     }
 
     ticks += TICK_PER_FRAME;
   }
 
-  draw_vertex(BLACK);
+  draw_vertex(obj.vertex_counts, obj.projected_vertex, BLACK);
+  draw_triangles(obj.vertex_counts, obj.projected_vertex, obj.triangles, RED);
 }
