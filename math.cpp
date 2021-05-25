@@ -1,9 +1,7 @@
-#include "data_structure.h"
+#include "math.h"
 #include "trigonometric.h"
 
-#define PI 3.1415926
-
-Matrix4f mMultiply(const Matrix4f &mat1, const Matrix4f &mat2)
+Matrix4f mMultiply(const Matrix4f mat1, const Matrix4f mat2)
 {
     Matrix4f mat;
     for (unsigned char c = 0; c < 4; c++)
@@ -69,4 +67,13 @@ Matrix4f mScale(const float ratio)
     mat.m[1][1] *= ratio;
     mat.m[2][2] *= ratio;
     return mat;
+}
+
+Vector3f m_mul_v(const Matrix4f m, const Vector3f v)
+{
+    Vector3f v_res;
+    v_res.x = m.m[0][0] * v.x + m.m[1][0] * v.y + m.m[2][0] * v.z + m.m[3][0];
+    v_res.y = m.m[0][1] * v.x + m.m[1][1] * v.y + m.m[2][1] * v.z + m.m[3][1];
+    v_res.z = m.m[0][2] * v.x + m.m[1][2] * v.y + m.m[2][2] * v.z + m.m[3][2];
+    return v_res;
 }
