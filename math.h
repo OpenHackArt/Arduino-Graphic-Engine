@@ -41,4 +41,6 @@ Matrix4f mScale(const float ratio);
 
 Vector3f m_mul_v(const Matrix4f m, const Vector3f v);
 
+bool is_visible(const Vector2f v0, const Vector2f v1, const Vector2f v2);
+
 #endif

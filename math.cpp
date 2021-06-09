@@ -77,3 +77,9 @@ Vector3f m_mul_v(const Matrix4f m, const Vector3f v)
     v_res.z = m.m[0][2] * v.x + m.m[1][2] * v.y + m.m[2][2] * v.z + m.m[3][2];
     return v_res;
 }
+
+bool is_visible(const Vector2f v0, const Vector2f v1, const Vector2f v2)
+{
+    // shoelace algorithm to get triangle area
+    return (v2.x - v0.x) * (v1.y - v0.y) < (v1.x - v0.x) * (v2.y - v0.y);
+}

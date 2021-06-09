@@ -42,7 +42,10 @@ void draw_triangles(int triangle_cnts, Vector2f *projected, const Vector3i *indi
     Vector2f v0 = projected[index.x];
     Vector2f v1 = projected[index.y];
     Vector2f v2 = projected[index.z];
-    tft.drawTriangle(v0.x, v0.y, v1.x, v1.y, v2.x, v2.y, color);
+    if (is_visible(v0, v1, v2))
+    {
+      tft.drawTriangle(v0.x, v0.y, v1.x, v1.y, v2.x, v2.y, color);
+    }
   }
 }
 
@@ -55,16 +58,13 @@ void setup()
   tft.fillScreen(BLACK);
   mode_ui(WHITE);
   m_world = mMultiply(mScale(0.3), m_world);
+  m_world = mMultiply(mRotateY(45), m_world);
 }
 
 void loop(void)
 {
   int start = millis();
-  sephere obj;
-
-  m_world = mMultiply(mRotateY(5), m_world);
-  m_world = mMultiply(mRotateX(5), m_world);
-  m_world = mMultiply(mRotateZ(5), m_world);
+  bunny obj;
 
   // for future, z-buffer
   for (int i = 0; i < obj.vertex_counts; i++)
@@ -79,7 +79,7 @@ void loop(void)
   tft.fillScreen(BLACK);
   draw_triangles(obj.triangle_counts, obj.projected_vertex, obj.indices, GREEN);
   // clear frame
-  // draw_triangles(obj.triangle_counts, obj.projected_vertex, obj.indices, WHITE);
+  // draw_triangles(obj.triangle_counts, obj.projected_vertex, obj.indices, TFT_WHITE);
 
   int end = millis();
   Serial.println(1000 / (end - start));
