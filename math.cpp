@@ -78,8 +78,35 @@ Vector3f m_mul_v(const Matrix4f m, const Vector3f v)
     return v_res;
 }
 
-bool is_visible(const Vector2f v0, const Vector2f v1, const Vector2f v2)
+// bool is_hidden(const Vector2f v0, const Vector2f v1, const Vector2f v2)
+// {
+//     // shoelace algorithm to get triangle area
+//     return (v2.x - v0.x) * (v1.y - v0.y) < ((v1.x - v0.x) * (v2.y - v0.y));
+// }
+
+bool is_hidden(const Vector2f v0, const Vector2f v1, const Vector2f v2)
 {
     // shoelace algorithm to get triangle area
-    return (v2.x - v0.x) * (v1.y - v0.y) < (v1.x - v0.x) * (v2.y - v0.y);
+    return (v0.x * v1.y - v1.x * v0.y) + (v1.x * v2.y - v2.x * v1.y) + (v2.x * v0.y - v0.x * v2.y) < 0 ? false : true;
+}
+
+bool is_vertices_equal(int vertex_cnt, Vector2f *buffer0, Vector2f *buffer1)
+{
+    for (int i = 0; i < vertex_cnt; i++)
+    {
+        if (buffer0[i].x != buffer1[i].x)
+            return false;
+        if (buffer0[i].y != buffer1[i].y)
+            return false;
+    }
+    return true;
+}
+
+void copy_vertices(int vertex_cnt, Vector2f *target, Vector2f *source)
+{
+    for (int i = 0; i < vertex_cnt; i++)
+    {
+        target[i].x = source[i].x;
+        target[i].y = source[i].y;
+    }
 }

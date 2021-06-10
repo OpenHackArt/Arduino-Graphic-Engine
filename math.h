@@ -41,6 +41,10 @@ Matrix4f mScale(const float ratio);
 
 Vector3f m_mul_v(const Matrix4f m, const Vector3f v);
 
-bool is_visible(const Vector2f v0, const Vector2f v1, const Vector2f v2);
+bool is_hidden(const Vector2f v0, const Vector2f v1, const Vector2f v2);
+
+bool is_vertices_equal(int vertex_cnt, Vector2f *buffer0, Vector2f *buffer1);
+
+void copy_vertices(int vertex_cnt, Vector2f *target, Vector2f *source);
 
 #endif

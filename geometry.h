@@ -33,8 +33,6 @@ typedef struct cube
         {5, 3, 2},
         {4, 0, 3},
         {3, 5, 4}};
-
-    Vector2f projected_vertex[8]; // (x, y) screen space
 };
 
 typedef struct sephere
@@ -368,8 +366,6 @@ typedef struct sephere
         {109, 141, 11},
         {11, 141, 107},
     };
-
-    Vector2f projected_vertex[142];
 };
 
 typedef struct cone
@@ -422,8 +418,6 @@ typedef struct cone
         {3, 14, 6},
         {14, 10, 6},
     };
-
-    Vector2f projected_vertex[15];
 };
 
 typedef struct bunny
@@ -735,8 +729,6 @@ typedef struct bunny
         {92, 88, 41},
         {78, 7, 21},
         {75, 84, 40}};
-
-    Vector2f projected_vertex[102];
 };
 
 typedef struct small_bunny
@@ -900,8 +892,6 @@ typedef struct small_bunny
         {48, 38, 19},
         {40, 6, 13},
     };
-
-    Vector2f projected_vertex[52];
 };
 
 typedef struct face
@@ -1151,7 +1141,6 @@ typedef struct face
         {74, 24, 25},
         {74, 25, 75},
     };
-    Vector2f projected_vertex[136];
 };
 
 #endif
