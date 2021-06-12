@@ -49,10 +49,12 @@ Vector4f m4_mul_v3(const Matrix4f m, const Vector3f v);
 
 Vector4f v3tov4(const Vector3f v3);
 
+Vector3f m_mul_v_acc(const Matrix4f m, const Vector3f v);
+
 bool is_hidden(const Vector2f v0, const Vector2f v1, const Vector2f v2);
 
-bool is_vertices_equal(int vertex_cnt, Vector2f *buffer0, Vector2f *buffer1);
+bool is_vertices_equal(int start, int end, Vector2f *buffer0, Vector2f *buffer1);
 
-void copy_vertices(int vertex_cnt, Vector2f *target, Vector2f *source);
+void copy_vertices(int start, int end, Vector2f *target, Vector2f *source);
 
 #endif

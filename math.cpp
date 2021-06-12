@@ -64,9 +64,9 @@ Matrix4f mTranslate(const float x, const float y, const float z)
 Matrix4f mScale(const float ratio)
 {
     Matrix4f mat;
-    mat.m[0][0] *= ratio;
-    mat.m[1][1] *= ratio;
-    mat.m[2][2] *= ratio;
+    mat.m[0][0] = ratio;
+    mat.m[1][1] = ratio;
+    mat.m[2][2] = ratio;
     return mat;
 }
 
@@ -78,6 +78,15 @@ Vector4f m4_mul_v3(const Matrix4f m, const Vector3f v)
     v_res.z = m.m[2][0] * v_res.x + m.m[2][1] * v_res.y + m.m[2][2] * v_res.z + m.m[2][3] * v_res.w;
     v_res.w = m.m[3][0] * v_res.x + m.m[3][1] * v_res.y + m.m[3][2] * v_res.z + m.m[3][3] * v_res.w;
     return v_res;
+}
+
+Vector3f m_mul_v_acc(const Matrix4f m, const Vector3f v)
+{
+    Vector3f res;
+    res.x = m.m[0][0] * v.x + m.m[1][0] * v.y + m.m[2][0] * v.z + m.m[3][0];
+    res.y = m.m[0][1] * v.x + m.m[1][1] * v.y + m.m[2][1] * v.z + m.m[3][1];
+    res.z = m.m[0][2] * v.x + m.m[1][2] * v.y + m.m[2][2] * v.z + m.m[3][2];
+    return res;
 }
 
 Vector4f v3tov4(const Vector3f v3)
@@ -104,9 +113,10 @@ bool is_hidden(const Vector2f v0, const Vector2f v1, const Vector2f v2)
 }
 #endif
 
-bool is_vertices_equal(int vertex_cnt, Vector2f *buffer0, Vector2f *buffer1)
+// [inclusive, inclusive]
+bool is_vertices_equal(int start, int end, Vector2f *buffer0, Vector2f *buffer1)
 {
-    for (int i = 0; i < vertex_cnt; i++)
+    for (int i = start; i <= end; i++)
     {
         if (buffer0[i].x != buffer1[i].x)
             return false;
@@ -116,9 +126,10 @@ bool is_vertices_equal(int vertex_cnt, Vector2f *buffer0, Vector2f *buffer1)
     return true;
 }
 
-void copy_vertices(int vertex_cnt, Vector2f *target, Vector2f *source)
+// [inclusive, inclusive]
+void copy_vertices(int start, int end, Vector2f *target, Vector2f *source)
 {
-    for (int i = 0; i < vertex_cnt; i++)
+    for (int i = start; i < end; i++)
     {
         target[i].x = source[i].x;
         target[i].y = source[i].y;

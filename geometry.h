@@ -3,12 +3,21 @@
 
 #include "math.h"
 
+#define INDEX_CUBE 1
+#define INDEX_SEPHERE 2
+#define INDEX_CONE 3
+#define INDEX_FACE 4
+#define INDEX_SMALLBUNNY 5
+#define INDEX_BUNNY 6
+#define INDEX_EDITOR 7
+#define INDEX_RUNNING 8
+
 typedef struct cube
 {
     const int vertex_counts = 8;
     const int triangle_counts = 12;
 
-    const Vector3f vertex_pos[8] = {
+    Vector3f vertex_pos[8] = {
         {50, 50, -50},
         {50, -50, -50},
         {-50, -50, -50},
@@ -20,7 +29,7 @@ typedef struct cube
     };
 
     // Which three points form a triangle
-    const Vector3i indices[12] = {
+    Vector3i indices[12] = {
         {0, 1, 2},
         {2, 3, 0},
         {4, 5, 6},
@@ -39,7 +48,7 @@ typedef struct sephere
 {
     const int vertex_counts = 142;
     const int triangle_counts = 180;
-    const Vector3f vertex_pos[142] = {
+    Vector3f vertex_pos[142] = {
         {22, 0, -118},
         {-20, 0, -118},
         {48, 42, -102},
@@ -184,7 +193,7 @@ typedef struct sephere
         {-102, -62, 0},
     };
 
-    const Vector3i indices[180] = {
+    Vector3i indices[180] = {
         {4, 3, 110},
         {3, 2, 110},
         {2, 0, 110},
@@ -372,7 +381,7 @@ typedef struct cone
 {
     const int vertex_counts = 15;
     const int triangle_counts = 26;
-    const Vector3f vertex_pos[15] = {
+    Vector3f vertex_pos[15] = {
         {-14.073, 11.22285, -18.0},
         {0.0, 0.0, 18.0},
         {-7.8099, 16.2174, -18.0},
@@ -390,7 +399,7 @@ typedef struct cone
         {14.073, 11.22285, -18.0},
     };
 
-    const Vector3i indices[26] = {
+    Vector3i indices[26] = {
         {0, 1, 2},
         {3, 1, 4},
         {5, 1, 0},
@@ -424,7 +433,7 @@ typedef struct bunny
 {
     const int vertex_counts = 102;
     const int triangle_counts = 200;
-    const Vector3f vertex_pos[102] = {
+    Vector3f vertex_pos[102] = {
         {78, -34, 12},
         {34, 11, -119},
         {-82, 27, -56},
@@ -528,7 +537,7 @@ typedef struct bunny
         {-70, -59, 67},
         {-1, -42, 26},
     };
-    const Vector3i indices[200] = {
+    Vector3i indices[200] = {
         {65, 100, 5},
         {64, 2, 9},
         {4, 40, 10},
@@ -735,7 +744,7 @@ typedef struct small_bunny
 {
     const int vertex_counts = 52;
     const int triangle_counts = 100;
-    const Vector3f vertex_pos[52] = {
+    Vector3f vertex_pos[52] = {
         {-38, 43, -118},
         {-99, 20, -60},
         {127, -8, -61},
@@ -790,7 +799,7 @@ typedef struct small_bunny
         {-71, -77, -34},
     };
 
-    const Vector3i indices[100] = {
+    Vector3i indices[100] = {
         {31, 1, 8},
         {3, 12, 9},
         {34, 20, 41},
@@ -898,7 +907,7 @@ typedef struct face
 {
     const int vertex_counts = 103;
     const int triangle_counts = 136;
-    const Vector3f vertex_pos[103] = {
+    Vector3f vertex_pos[103] = {
         {-8, -11, 121},
         {-8, -25, 114},
         {-6, 51, 79},
@@ -1003,7 +1012,7 @@ typedef struct face
         {0, -69, 98},
         {0, -62, 92},
     };
-    const Vector3i indices[136] = {
+    Vector3i indices[136] = {
         {5, 2, 4},
         {33, 34, 11},
         {33, 11, 7},
@@ -1143,4 +1152,11 @@ typedef struct face
     };
 };
 
+int get_vertex_cnts(unsigned char obj_index);
+
+int get_triangle_cnts(unsigned char obj_index);
+
+Vector3f *get_vertex_pos(unsigned char obj_index);
+
+Vector3i *get_indices(unsigned char obj_index);
 #endif
