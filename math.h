@@ -18,6 +18,12 @@ typedef struct
     float x, y;
 } Vector2f;
 
+// V4 only for calculation but not for presentation
+typedef struct
+{
+    float x, y, z, w;
+} Vector4f;
+
 typedef struct
 {
     float m[4][4] = {
@@ -39,7 +45,9 @@ Matrix4f mTranslate(const float x, const float y, const float z);
 
 Matrix4f mScale(const float ratio);
 
-Vector3f m_mul_v(const Matrix4f m, const Vector3f v);
+Vector4f m4_mul_v3(const Matrix4f m, const Vector3f v);
+
+Vector4f v3tov4(const Vector3f v3);
 
 bool is_hidden(const Vector2f v0, const Vector2f v1, const Vector2f v2);
 

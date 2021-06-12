@@ -8,12 +8,26 @@
 #define K3 12
 #define K4 13
 
-#define FOV 60
+#define FOV 300
 #define SCREEN_WIDTH 480
 #define SCREEN_HEIGHT 320
 #define HALF_SCREEN_WIDTH 240
 #define HALF_SCREEN_HEIGHT 160
 #define MAX_VERTEX 2000
+#define OFFSET 80
+#define GUI_WIDTH 160
+#define GUI_BLOCK 60
+#define GUI_H_INTER 13
+#define GUI_V_INTER 16
+
+#define INDEX_CUBE 1
+#define INDEX_SEPHERE 2
+#define INDEX_CONE 3
+#define INDEX_FACE 4
+#define INDEX_SMALLBUNNY 5
+#define INDEX_BUNNY 6
+#define INDEX_EDITOR 7
+#define INDEX_RUNNING 8
 
 Vector2f current_frame_vertex[MAX_VERTEX];
 Vector2f last_frame_vertex[MAX_VERTEX];
@@ -25,12 +39,70 @@ Matrix4f m_world;
 
 cube obj;
 
-void mode_ui(const uint16_t color)
+void gui_block(unsigned char index, int block_x, int block_y, bool seleted)
 {
-  tft.setCursor(0, 2);
-  tft.setTextColor(color);
-  tft.setTextSize(2);
-  tft.println("Author: @cyq");
+  switch (index)
+  {
+  case INDEX_CUBE:
+    tft.fillRect(block_x + 10, block_y + 10, 40, 40, BLACK);
+    break;
+  case INDEX_SEPHERE:
+    tft.fillCircle(block_x + 30, block_y + 30, 20, BLACK);
+    break;
+  case INDEX_CONE:
+    tft.fillTriangle(block_x + 30, block_y + 10, block_x + 10, block_y + 50, block_x + 50, block_y + 50, BLACK);
+    break;
+  case INDEX_FACE:
+    tft.fillTriangle(block_x + 10, block_y + 20, block_x + 20, block_y + 50, block_x + 20, block_y + 10, BLACK);
+    tft.fillRect(block_x + 20, block_y + 10, 20, 40, BLACK);
+    tft.fillTriangle(block_x + 40, block_y + 10, block_x + 40, block_y + 50, block_x + 50, block_y + 20, BLACK);
+    break;
+  case INDEX_SMALLBUNNY:
+    tft.fillTriangle(block_x + 10, block_y + 30, block_x + 15, block_y + 32, block_x + 15, block_y + 28, BLACK);
+    tft.fillRect(block_x + 15, block_y + 26, 35, 10, BLACK);
+    tft.fillRect(block_x + 37, block_y + 16, 2, 10, BLACK);
+    tft.fillRect(block_x + 43, block_y + 16, 2, 10, BLACK);
+    break;
+  case INDEX_BUNNY:
+    tft.fillTriangle(block_x + 5, block_y + 30, block_x + 10, block_y + 28, block_x + 10, block_y + 38, BLACK);
+    tft.fillRect(block_x + 10, block_y + 26, 45, 16, BLACK);
+    tft.fillRect(block_x + 30, block_y + 10, 8, 16, BLACK);
+    tft.fillRect(block_x + 42, block_y + 10, 8, 16, BLACK);
+    break;
+  case INDEX_EDITOR:
+    tft.setCursor(block_x + 7, block_y + 20);
+    tft.setTextSize(2);
+    tft.println("Edit");
+    break;
+  case INDEX_RUNNING:
+    tft.setCursor(block_x + 5, block_y + 20);
+    tft.setTextSize(3);
+    tft.println("Run");
+    break;
+  default:
+    break;
+  }
+}
+
+void gui()
+{
+  tft.fillRect(0, 0, GUI_WIDTH, 320, OLIVE);
+  int block_x = GUI_H_INTER;
+  int block_y = 0;
+  // draw first column
+  for (unsigned char i = 1; i <= 4; i++)
+  {
+    block_y = i * GUI_V_INTER + (i - 1) * GUI_BLOCK;
+    tft.fillRect(block_x, block_y, GUI_BLOCK, GUI_BLOCK, WHITE);
+    gui_block(i, block_x, block_y, false);
+  }
+  block_x = 2 * GUI_H_INTER + GUI_BLOCK;
+  for (unsigned char i = 1; i <= 4; i++)
+  {
+    block_y = i * GUI_V_INTER + (i - 1) * GUI_BLOCK;
+    tft.fillRect(block_x, block_y, GUI_BLOCK, GUI_BLOCK, WHITE);
+    gui_block(i + 4, block_x, block_y, false);
+  }
 }
 
 void draw_vertex(int vertex_cnts, Vector2f *projected, const uint16_t color)
@@ -88,10 +160,10 @@ void setup()
   tft.begin();
   tft.setRotation(1);
 
-  tft.fillScreen(BLACK);
-  mode_ui(WHITE);
+  tft.fillScreen(0xffff);
+  gui();
   m_world = mMultiply(mScale(0.3), m_world);
-  m_world = mMultiply(mRotateY(45), m_world);
+  m_world = mMultiply(mTranslate(0, 0, 10), m_world);
   total_vertex += obj.vertex_counts;
 }
 
@@ -99,14 +171,10 @@ void loop(void)
 {
   int start = millis();
   m_world = mMultiply(mRotateY(1), m_world);
-
-  // for future, z-buffer
   for (int i = 0; i < obj.vertex_counts; i++)
   {
-    // no camera
-    // project to screen space directly
-    Vector3f v = m_mul_v(m_world, obj.vertex_pos[i]);
-    current_frame_vertex[i].x = (FOV * v.x) / (FOV + v.z) + HALF_SCREEN_WIDTH;
+    Vector4f v = m4_mul_v3(m_world, obj.vertex_pos[i]);
+    current_frame_vertex[i].x = ((FOV * v.x) / (FOV + v.z) + HALF_SCREEN_WIDTH) + OFFSET;
     current_frame_vertex[i].y = (FOV * v.y) / (FOV + v.z) + HALF_SCREEN_HEIGHT;
   }
 
