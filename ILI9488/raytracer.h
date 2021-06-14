@@ -351,13 +351,17 @@ void doRaytrace(int raysPerPixel = 4, int dw = 320, int dh = 240, int q = 1)
                 b = 255;
             }
             if (q == 1)
-                tft.drawPixel(x, y, ~RGBTO565(r, g, b));
+                display.drawPixel(x, y, RGBTO565(r, g, b));
             else
-                tft.fillRect(x, y, q, q, RGBTO565(r, g, b));
+                display.fillRect(x, y, q, q, RGBTO565(r, g, b));
         }
+// workaround for ESP8266 which reboots after staying too long in the loops (WTF-watchdog?)
+#ifdef ESP8266
+        delay(1);
+#endif
         char buf[100];
         snprintf(buf, 100, "%3d%% %3ds", (y + q) * 100 / dh, (millis() - t) / 1000);
-        tft.setCursor(8, 0);
-        tft.println(buf);
+        display.setCursor(8, 0);
+        display.println(buf);
     }
 }

@@ -3,11 +3,6 @@
 #include "geometry.h"
 #include "math.h"
 
-TFT_HX8357_Due tft = TFT_HX8357_Due();
-
-#define RGBTO565(_r, _g, _b) ((((_r)&B11111000) << 8) | (((_g)&B11111100) << 3) | ((_b) >> 3))
-#include "raytracer.h"
-
 #define K1 10
 #define K2 11
 #define K3 12
@@ -25,6 +20,8 @@ TFT_HX8357_Due tft = TFT_HX8357_Due();
 #define GUI_BLOCK 60
 #define GUI_H_INTER 13
 #define GUI_V_INTER 16
+
+TFT_HX8357_Due tft = TFT_HX8357_Due();
 
 unsigned char select_index = 1; // from 1 to 8
 int total_vertex = 0;
@@ -154,60 +151,49 @@ void setup()
   Serial.begin(9600);
   tft.begin();
   tft.setRotation(1);
-
   tft.fillScreen(0xffff);
-  unsigned long t = millis();
-  doRaytrace(1, 480, 320, 1); // full 320x240 1 sample
-                              //  doRaytrace(1,320,240,4); // fast preview
-                              //  doRaytrace(1,320,240,2); // slower preview
-                              //  doRaytrace(1,160,120,2); // quarter of the screen
-                              //  doRaytrace(8);  // very high quality 320x240 antialiased, 8 samples
-  Serial.println(F("Done!"));
-  Serial.print(F("Time = "));
-  Serial.print((millis() - t) / 1000);
-  Serial.println(F(" seconds"));
-  // gui();
-  // m_world = mMultiply(mScale(0.3), m_world);
+  gui();
+  m_world = mMultiply(mScale(0.3), m_world);
 }
 
 void loop(void)
 {
-  // if (Serial.available() > 0)
-  // {
-  //   int comming_data = Serial.parseInt();
-  //   if (comming_data >= 1 && comming_data <= 8)
-  //   {
-  //     select_index = comming_data;
-  //     gui();
-  //   }
-  //   if (comming_data == 9)
-  //   {
-  //     clear_frame();
-  //     obj_index = select_index;
-  //   }
-  // }
-  // int start = millis();
-  // m_world = mMultiply(mRotateY(1), m_world);
-  // int vertex_cnts = get_vertex_cnts(obj_index);
-  // int tri_cnts = get_triangle_cnts(obj_index);
-  // Vector3f *pos = get_vertex_pos(obj_index);
-  // Vector3i *indices = get_indices(obj_index);
-  // total_vertex = vertex_cnts;
-  // for (int i = 0; i < vertex_cnts; i++)
-  // {
-  //   Vector3f v = m_mul_v_acc(m_world, pos[i]);
-  //   current_frame_vertex[i].x = ((FOV * v.x) / (FOV + v.z) + HALF_SCREEN_WIDTH) + OFFSET;
-  //   current_frame_vertex[i].y = (FOV * v.y) / (FOV + v.z) + HALF_SCREEN_HEIGHT;
-  // }
+  if (Serial.available() > 0)
+  {
+    int comming_data = Serial.parseInt();
+    if (comming_data >= 1 && comming_data <= 8)
+    {
+      select_index = comming_data;
+      gui();
+    }
+    if (comming_data == 9)
+    {
+      clear_frame();
+      obj_index = select_index;
+    }
+  }
+  int start = millis();
+  m_world = mMultiply(mRotateY(1), m_world);
+  int vertex_cnts = get_vertex_cnts(obj_index);
+  int tri_cnts = get_triangle_cnts(obj_index);
+  Vector3f *pos = get_vertex_pos(obj_index);
+  Vector3i *indices = get_indices(obj_index);
+  total_vertex = vertex_cnts;
+  for (int i = 0; i < vertex_cnts; i++)
+  {
+    Vector3f v = m_mul_v_acc(m_world, pos[i]);
+    current_frame_vertex[i].x = ((FOV * v.x) / (FOV + v.z) + HALF_SCREEN_WIDTH) + OFFSET;
+    current_frame_vertex[i].y = (FOV * v.y) / (FOV + v.z) + HALF_SCREEN_HEIGHT;
+  }
 
-  // if (!is_vertices_equal(0, vertex_cnts, last_frame_vertex, current_frame_vertex))
-  // {
-  //   clear_frame();
-  //   draw_mesh(tri_cnts, indices, BLACK);
-  //   delay(16);
-  //   copy_vertices(0, vertex_cnts, last_frame_vertex, current_frame_vertex);
-  // }
+  if (!is_vertices_equal(0, vertex_cnts, last_frame_vertex, current_frame_vertex))
+  {
+    clear_frame();
+    draw_mesh(tri_cnts, indices, BLACK);
+    delay(16);
+    copy_vertices(0, vertex_cnts, last_frame_vertex, current_frame_vertex);
+  }
 
-  // int end = millis();
-  // Serial.println(1000 / (end - start));
+  int end = millis();
+  Serial.println(1000 / (end - start));
 }
