@@ -2,7 +2,7 @@
 
 cube obj_cube;
 
-sephere obj_sephere;
+sphere obj_sphere;
 
 cone obj_cone;
 
@@ -18,8 +18,8 @@ int get_vertex_cnts(unsigned char obj_index)
     {
     case INDEX_CUBE:
         return obj_cube.vertex_counts;
-    case INDEX_SEPHERE:
-        return obj_sephere.vertex_counts;
+    case INDEX_SPHERE:
+        return obj_sphere.vertex_counts;
     case INDEX_CONE:
         return obj_cone.vertex_counts;
     case INDEX_BUNNY:
@@ -40,8 +40,8 @@ int get_triangle_cnts(unsigned char obj_index)
     {
     case INDEX_CUBE:
         return obj_cube.triangle_counts;
-    case INDEX_SEPHERE:
-        return obj_sephere.triangle_counts;
+    case INDEX_SPHERE:
+        return obj_sphere.triangle_counts;
     case INDEX_CONE:
         return obj_cone.triangle_counts;
     case INDEX_BUNNY:
@@ -62,8 +62,8 @@ Vector3f *get_vertex_pos(unsigned char obj_index)
     {
     case INDEX_CUBE:
         return obj_cube.vertex_pos;
-    case INDEX_SEPHERE:
-        return obj_sephere.vertex_pos;
+    case INDEX_SPHERE:
+        return obj_sphere.vertex_pos;
     case INDEX_CONE:
         return obj_cone.vertex_pos;
     case INDEX_BUNNY:
@@ -84,8 +84,8 @@ Vector3i *get_indices(unsigned char obj_index)
     {
     case INDEX_CUBE:
         return obj_cube.indices;
-    case INDEX_SEPHERE:
-        return obj_sephere.indices;
+    case INDEX_SPHERE:
+        return obj_sphere.indices;
     case INDEX_CONE:
         return obj_cone.indices;
     case INDEX_BUNNY:

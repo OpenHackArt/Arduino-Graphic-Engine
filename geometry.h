@@ -4,7 +4,7 @@
 #include "math.h"
 
 #define INDEX_CUBE 1
-#define INDEX_SEPHERE 2
+#define INDEX_SPHERE 2
 #define INDEX_CONE 3
 #define INDEX_FACE 4
 #define INDEX_SMALLBUNNY 5
@@ -44,7 +44,7 @@ typedef struct cube
         {3, 5, 4}};
 };
 
-typedef struct sephere
+typedef struct sphere
 {
     const int vertex_counts = 142;
     const int triangle_counts = 180;

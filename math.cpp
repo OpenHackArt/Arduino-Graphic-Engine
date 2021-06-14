@@ -113,10 +113,10 @@ bool is_hidden(const Vector2f v0, const Vector2f v1, const Vector2f v2)
 }
 #endif
 
-// [inclusive, inclusive]
+// [inclusive, exclusive)
 bool is_vertices_equal(int start, int end, Vector2f *buffer0, Vector2f *buffer1)
 {
-    for (int i = start; i <= end; i++)
+    for (int i = start; i < end; i++)
     {
         if (buffer0[i].x != buffer1[i].x)
             return false;
@@ -126,7 +126,7 @@ bool is_vertices_equal(int start, int end, Vector2f *buffer0, Vector2f *buffer1)
     return true;
 }
 
-// [inclusive, inclusive]
+// [inclusive, exclusive)
 void copy_vertices(int start, int end, Vector2f *target, Vector2f *source)
 {
     for (int i = start; i < end; i++)
