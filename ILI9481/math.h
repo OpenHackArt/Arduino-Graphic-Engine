@@ -35,11 +35,11 @@ typedef struct
 
 Matrix4f mMultiply(const Matrix4f mat1, const Matrix4f mat2);
 
-Matrix4f mRotateX(unsigned int angle);
+Matrix4f mRotateX(int angle);
 
-Matrix4f mRotateY(unsigned int angle);
+Matrix4f mRotateY(int angle);
 
-Matrix4f mRotateZ(unsigned int angle);
+Matrix4f mRotateZ(int angle);
 
 Matrix4f mTranslate(const float x, const float y, const float z);
 

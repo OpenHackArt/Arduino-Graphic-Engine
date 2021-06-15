@@ -12,6 +12,10 @@ small_bunny obj_small_bunny;
 
 bunny obj_bunny;
 
+monkey obj_monkey;
+
+torus obj_torus;
+
 int get_vertex_cnts(unsigned char obj_index)
 {
     switch (obj_index)
@@ -28,6 +32,10 @@ int get_vertex_cnts(unsigned char obj_index)
         return obj_small_bunny.vertex_counts;
     case INDEX_FACE:
         return obj_face.vertex_counts;
+    case INDEX_MONKEY:
+        return obj_monkey.vertex_counts;
+    case INDEX_TORUS:
+        return obj_torus.vertex_counts;
     default:
         break;
     }
@@ -50,6 +58,10 @@ int get_triangle_cnts(unsigned char obj_index)
         return obj_small_bunny.triangle_counts;
     case INDEX_FACE:
         return obj_face.triangle_counts;
+    case INDEX_MONKEY:
+        return obj_monkey.triangle_counts;
+    case INDEX_TORUS:
+        return obj_torus.triangle_counts;
     default:
         break;
     }
@@ -72,6 +84,10 @@ Vector3f *get_vertex_pos(unsigned char obj_index)
         return obj_small_bunny.vertex_pos;
     case INDEX_FACE:
         return obj_face.vertex_pos;
+    case INDEX_MONKEY:
+        return obj_monkey.vertex_pos;
+    case INDEX_TORUS:
+        return obj_torus.vertex_pos;
     default:
         break;
     }
@@ -94,6 +110,10 @@ Vector3i *get_indices(unsigned char obj_index)
         return obj_small_bunny.indices;
     case INDEX_FACE:
         return obj_face.indices;
+    case INDEX_MONKEY:
+        return obj_monkey.indices;
+    case INDEX_TORUS:
+        return obj_torus.indices;
     default:
         break;
     }

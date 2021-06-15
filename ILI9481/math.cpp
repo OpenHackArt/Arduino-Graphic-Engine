@@ -19,36 +19,72 @@ Matrix4f mMultiply(const Matrix4f mat1, const Matrix4f mat2)
     return mat;
 }
 
-Matrix4f mRotateX(unsigned int angle)
+Matrix4f mRotateX(int angle)
 {
     Matrix4f mat;
-    angle = angle % 360;
-    mat.m[1][1] = cos_value[angle];
-    mat.m[1][2] = -sin_value[angle];
-    mat.m[2][1] = sin_value[angle];
-    mat.m[2][2] = cos_value[angle];
+    if (angle >= 0)
+    {
+        angle = angle % 360;
+        mat.m[1][1] = cos_value[angle];
+        mat.m[1][2] = -sin_value[angle];
+        mat.m[2][1] = sin_value[angle];
+        mat.m[2][2] = cos_value[angle];
+    }
+    else
+    {
+        angle = (-angle) % 360;
+        mat.m[1][1] = cos_value[angle];
+        mat.m[1][2] = sin_value[angle];
+        mat.m[2][1] = -sin_value[angle];
+        mat.m[2][2] = cos_value[angle];
+    }
+
     return mat;
 }
 
-Matrix4f mRotateY(unsigned int angle)
+Matrix4f mRotateY(int angle)
 {
     Matrix4f mat;
-    angle = angle % 360;
-    mat.m[0][0] = cos_value[angle];
-    mat.m[0][2] = sin_value[angle];
-    mat.m[2][0] = -sin_value[angle];
-    mat.m[2][2] = cos_value[angle];
+    if (angle >= 0)
+    {
+        angle = angle % 360;
+        mat.m[0][0] = cos_value[angle];
+        mat.m[0][2] = sin_value[angle];
+        mat.m[2][0] = -sin_value[angle];
+        mat.m[2][2] = cos_value[angle];
+    }
+    else
+    {
+        angle = (-angle) % 360;
+        mat.m[0][0] = cos_value[angle];
+        mat.m[0][2] = -sin_value[angle];
+        mat.m[2][0] = sin_value[angle];
+        mat.m[2][2] = cos_value[angle];
+    }
+
     return mat;
 }
 
-Matrix4f mRotateZ(unsigned int angle)
+Matrix4f mRotateZ(int angle)
 {
     Matrix4f mat;
-    angle = angle % 360;
-    mat.m[0][0] = cos_value[angle];
-    mat.m[0][1] = -sin_value[angle];
-    mat.m[1][0] = sin_value[angle];
-    mat.m[1][1] = cos_value[angle];
+    if (angle >= 0)
+    {
+        angle = angle % 360;
+        mat.m[0][0] = cos_value[angle];
+        mat.m[0][1] = -sin_value[angle];
+        mat.m[1][0] = sin_value[angle];
+        mat.m[1][1] = cos_value[angle];
+    }
+    else
+    {
+        angle = (-angle) % 360;
+        mat.m[0][0] = cos_value[angle];
+        mat.m[0][1] = sin_value[angle];
+        mat.m[1][0] = -sin_value[angle];
+        mat.m[1][1] = cos_value[angle];
+    }
+
     return mat;
 }
 

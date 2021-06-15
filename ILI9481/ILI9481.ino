@@ -8,8 +8,13 @@
 #define K3 12
 #define K4 13
 
-#define JOY_STICK_V 57
-#define JOY_STICK_H 58
+#define BTN_UP K3
+#define BTN_LEFT K4
+#define BTN_DOWN K1
+#define BTN_RIGHT K2
+
+#define JOY_STICK_X 57
+#define JOY_STICK_Y 58
 
 #define FOV 60
 #define SCREEN_WIDTH 480
@@ -31,9 +36,10 @@ int total_vertex = 0;
 
 Vector2f current_frame_vertex[MAX_VERTEX];
 Vector2f last_frame_vertex[MAX_VERTEX];
-unsigned char obj_index = 1;
 
 Matrix4f m_world;
+
+int btn_up, btn_down, btn_left, btn_right;
 
 void gui_block(unsigned char index, int block_x, int block_y, bool seleted)
 {
@@ -70,15 +76,15 @@ void gui_block(unsigned char index, int block_x, int block_y, bool seleted)
     tft.fillRect(block_x + 30, block_y + 10, 8, 16, color);
     tft.fillRect(block_x + 42, block_y + 10, 8, 16, color);
     break;
-  case INDEX_EDITOR:
-    tft.setCursor(block_x + 7, block_y + 20);
-    tft.setTextSize(2);
-    tft.println("Edit");
+  case INDEX_MONKEY:
+    tft.setCursor(block_x + 12, block_y + 15);
+    tft.setTextSize(4);
+    tft.println("M");
     break;
-  case INDEX_RUNNING:
-    tft.setCursor(block_x + 5, block_y + 20);
-    tft.setTextSize(3);
-    tft.println("Run");
+  case INDEX_TORUS:
+    tft.setCursor(block_x + 12, block_y + 15);
+    tft.setTextSize(4);
+    tft.println("T");
     break;
   default:
     break;
@@ -108,6 +114,15 @@ void gui()
   }
 }
 
+void too_big_warning()
+{
+  tft.fillRect(GUI_WIDTH, 0, SCREEN_WIDTH - GUI_WIDTH, SCREEN_HEIGHT, WHITE);
+  tft.setCursor(GUI_WIDTH + 10, (SCREEN_HEIGHT / 2) - 10);
+  tft.setTextSize(6);
+  tft.setTextColor(BLUE);
+  tft.println("Too Big");
+}
+
 void draw_mesh(int triangle_cnts, const Vector3i *indices, const uint16_t color)
 {
   for (int i = 0; i < triangle_cnts; i++)
@@ -116,6 +131,18 @@ void draw_mesh(int triangle_cnts, const Vector3i *indices, const uint16_t color)
     Vector2f v0 = current_frame_vertex[index.x];
     Vector2f v1 = current_frame_vertex[index.y];
     Vector2f v2 = current_frame_vertex[index.z];
+
+    if (v0.x < GUI_WIDTH || v1.x < GUI_WIDTH || v2.x < GUI_WIDTH || v0.x > SCREEN_WIDTH || v1.x > SCREEN_WIDTH || v2.x > SCREEN_WIDTH)
+    {
+      too_big_warning();
+      return;
+    }
+
+    if (v0.y < 0 || v1.y < 0 || v2.y < 0 || v0.y > SCREEN_HEIGHT || v1.y > SCREEN_HEIGHT || v2.y > SCREEN_HEIGHT)
+    {
+      too_big_warning();
+      return;
+    }
 
     if (!is_hidden(v0, v1, v2))
     {
@@ -149,14 +176,23 @@ void clear_frame()
   tft.fillRect(min_x - 5, min_y - 5, w + 20, h + 20, WHITE);
 }
 
+void show_fps(int start, int end)
+{
+  tft.fillRect(460, 0, 20, 20, WHITE);
+  tft.setCursor(460, 3);
+  tft.setTextColor(BLACK);
+  tft.setTextSize(1);
+  tft.println(1000 / (end - start));
+}
+
 void setup()
 {
-  pinMode(K1, INPUT);
-  pinMode(K2, INPUT);
-  pinMode(K3, INPUT);
-  pinMode(K4, INPUT);
-  pinMode(JOY_STICK_V, INPUT);
-  pinMode(JOY_STICK_H, INPUT);
+  pinMode(BTN_UP, INPUT);
+  pinMode(BTN_LEFT, INPUT);
+  pinMode(BTN_RIGHT, INPUT);
+  pinMode(BTN_DOWN, INPUT);
+  pinMode(JOY_STICK_X, INPUT);
+  pinMode(JOY_STICK_Y, INPUT);
   Serial.begin(9600);
   tft.begin();
   tft.setRotation(1);
@@ -165,49 +201,98 @@ void setup()
   m_world = mMultiply(mScale(0.3), m_world);
 }
 
+bool is_press = false;
+
 void loop(void)
 {
+  btn_down = digitalRead(BTN_DOWN);
+  btn_up = digitalRead(BTN_UP);
+  btn_left = digitalRead(BTN_LEFT);
+  btn_right = digitalRead(BTN_RIGHT);
+  if (!btn_up)
+  {
+    if (select_index != 1)
+    {
+      select_index--;
+      is_press = true;
+      delay(300);
+    }
+  }
+  else if (!btn_left)
+  {
+    m_world = mMultiply(mScale(0.99), m_world);
+  }
+  else if (!btn_right)
+  {
+    m_world = mMultiply(mScale(1.01), m_world);
+  }
+  else if (!btn_down)
+  {
+    if (select_index != 8)
+    {
+      select_index++;
+      is_press = true;
+      delay(300);
+    }
+  }
+  if (is_press)
+  {
+    m_world = mScale(0.3);
+    tft.fillScreen(WHITE);
+    gui();
+  }
+  is_press = false;
 
-  // if (Serial.available() > 0)
-  // {
-  //   int comming_data = Serial.parseInt();
-  //   if (comming_data >= 1 && comming_data <= 8)
-  //   {
-  //     select_index = comming_data;
-  //     gui();
-  //   }
-  //   if (comming_data == 9)
-  //   {
-  //     clear_frame();
-  //     obj_index = select_index;
-  //   }
-  // }
-  // int start = millis();
-  // m_world = mMultiply(mRotateY(1), m_world);
-  // int vertex_cnts = get_vertex_cnts(obj_index);
-  // int tri_cnts = get_triangle_cnts(obj_index);
-  // Vector3f *pos = get_vertex_pos(obj_index);
-  // Vector3i *indices = get_indices(obj_index);
-  // total_vertex = vertex_cnts;
-  // for (int i = 0; i < vertex_cnts; i++)
-  // {
-  //   Vector3f v = m_mul_v_acc(m_world, pos[i]);
-  //   current_frame_vertex[i].x = ((FOV * v.x) / (FOV + v.z) + HALF_SCREEN_WIDTH) + OFFSET;
-  //   current_frame_vertex[i].y = (FOV * v.y) / (FOV + v.z) + HALF_SCREEN_HEIGHT;
-  // }
+  int x_rotation = analogRead(JOY_STICK_X);
+  int y_rotation = analogRead(JOY_STICK_Y);
+  if (x_rotation > 1000)
+  {
+    x_rotation = -1;
+  }
+  else if (x_rotation < 10)
+  {
+    x_rotation = 1;
+  }
+  else
+  {
+    x_rotation = 0;
+  }
+  if (y_rotation < 10)
+  {
+    y_rotation = 1;
+  }
+  else if (y_rotation > 1000)
+  {
+    y_rotation = -1;
+  }
+  else
+  {
+    y_rotation = 0;
+  }
 
-  // if (!is_vertices_equal(0, vertex_cnts, last_frame_vertex, current_frame_vertex))
-  // {
-  //   clear_frame();
-  //   draw_mesh(tri_cnts, indices, BLACK);
-  //   delay(16);
-  //   copy_vertices(0, vertex_cnts, last_frame_vertex, current_frame_vertex);
-  // }
+  int start = millis();
+  m_world = mMultiply(mRotateY(y_rotation), m_world);
+  m_world = mMultiply(mRotateX(x_rotation), m_world);
+  int vertex_cnts = get_vertex_cnts(select_index);
+  int tri_cnts = get_triangle_cnts(select_index);
+  Vector3f *pos = get_vertex_pos(select_index);
+  Vector3i *indices = get_indices(select_index);
+  total_vertex = vertex_cnts;
+  for (int i = 0; i < vertex_cnts; i++)
+  {
+    Vector3f v = m_mul_v_acc(m_world, pos[i]);
+    current_frame_vertex[i].x = ((FOV * v.x) / (FOV + v.z) + HALF_SCREEN_WIDTH) + OFFSET;
+    current_frame_vertex[i].y = (FOV * v.y) / (FOV + v.z) + HALF_SCREEN_HEIGHT;
+  }
 
-  // int end = millis();
-  // Serial.println(1000 / (end - start));
-  int k = analogRead(JOY_STICK_V);
-  int t = analogRead(JOY_STICK_H);
-  Serial.println(k);
-  Serial.println(t);
+  if (!is_vertices_equal(0, vertex_cnts, last_frame_vertex, current_frame_vertex))
+  {
+    clear_frame();
+    draw_mesh(tri_cnts, indices, BLACK);
+    delay(16);
+    copy_vertices(0, vertex_cnts, last_frame_vertex, current_frame_vertex);
+  }
+
+  int end = millis();
+  show_fps(start, end);
 }
