@@ -3,6 +3,8 @@
 float pgm_read_float(const float *f) { return *f; }
 #endif
 
+#define RGBTO565(_r, _g, _b) ((((_r)&B11111000) << 8) | (((_g)&B11111100) << 3) | ((_b) >> 3))
+
 /*------------------------------------------------------------------------
   Values you can play with...
 ------------------------------------------------------------------------*/
@@ -88,21 +90,10 @@ struct vec3
 // A ray...
 struct ray
 {
-    // This occupies 24 bytes - you could only fit 20 of these into
-    // a Tiny85 even if you could use the entire RAM (which you can't...)
     vec3 o; // Origin
     vec3 d; // Direction
 };
 
-/*------------------------------------------------------------------------
-  Intersect a ray with the world
-  Return 'SKY' if no hit was found but ray goes upward
-  Return 'FLOOR' if no hit was found but ray goes downward towards the floor
-  Return a material index if a hit was found
-  Distance to the hit is returned in 'distance'. 
-  The surface normal at the hit is returned in 'normal'
-------------------------------------------------------------------------*/
-// Values for 'SKY' and 'FLOOR'
 static const byte SKY = 255;
 static const byte FLOOR = 254;
 
@@ -275,7 +266,7 @@ float sample(ray &r, vec3 &color)
 /*------------------------------------------------------------------------
   Raytrace the entire image
 ------------------------------------------------------------------------*/
-void doRaytrace(int raysPerPixel = 4, int dw = 320, int dh = 240, int q = 1)
+void doRaytrace(int raysPerPixel = 4, int dw = 480, int dh = 320, int q = 1, int cam_x = 0, int cam_y = 0, int cam_z = 3)
 {
     // Trace it
     int dw2 = dw / 2;
@@ -284,7 +275,7 @@ void doRaytrace(int raysPerPixel = 4, int dw = 320, int dh = 240, int q = 1)
     const float pixel = fov / float(dh2); // Size of one pixel on screen
 
     // Position/target of camera
-    const vec3 camera = vec3(cameraX, cameraY, cameraZ);
+    const vec3 camera = vec3(cam_x, cam_y, cam_z);
     const vec3 target = vec3(targetX, targetY, targetZ);
 
     unsigned long t = millis();
@@ -355,10 +346,6 @@ void doRaytrace(int raysPerPixel = 4, int dw = 320, int dh = 240, int q = 1)
             else
                 display.fillRect(x, y, q, q, RGBTO565(r, g, b));
         }
-// workaround for ESP8266 which reboots after staying too long in the loops (WTF-watchdog?)
-#ifdef ESP8266
-        delay(1);
-#endif
         char buf[100];
         snprintf(buf, 100, "%3d%% %3ds", (y + q) * 100 / dh, (millis() - t) / 1000);
         display.setCursor(8, 0);

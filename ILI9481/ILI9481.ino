@@ -8,6 +8,9 @@
 #define K3 12
 #define K4 13
 
+#define JOY_STICK_V 57
+#define JOY_STICK_H 58
+
 #define FOV 60
 #define SCREEN_WIDTH 480
 #define SCREEN_HEIGHT 320
@@ -148,6 +151,12 @@ void clear_frame()
 
 void setup()
 {
+  pinMode(K1, INPUT);
+  pinMode(K2, INPUT);
+  pinMode(K3, INPUT);
+  pinMode(K4, INPUT);
+  pinMode(JOY_STICK_V, INPUT);
+  pinMode(JOY_STICK_H, INPUT);
   Serial.begin(9600);
   tft.begin();
   tft.setRotation(1);
@@ -158,42 +167,47 @@ void setup()
 
 void loop(void)
 {
-  if (Serial.available() > 0)
-  {
-    int comming_data = Serial.parseInt();
-    if (comming_data >= 1 && comming_data <= 8)
-    {
-      select_index = comming_data;
-      gui();
-    }
-    if (comming_data == 9)
-    {
-      clear_frame();
-      obj_index = select_index;
-    }
-  }
-  int start = millis();
-  m_world = mMultiply(mRotateY(1), m_world);
-  int vertex_cnts = get_vertex_cnts(obj_index);
-  int tri_cnts = get_triangle_cnts(obj_index);
-  Vector3f *pos = get_vertex_pos(obj_index);
-  Vector3i *indices = get_indices(obj_index);
-  total_vertex = vertex_cnts;
-  for (int i = 0; i < vertex_cnts; i++)
-  {
-    Vector3f v = m_mul_v_acc(m_world, pos[i]);
-    current_frame_vertex[i].x = ((FOV * v.x) / (FOV + v.z) + HALF_SCREEN_WIDTH) + OFFSET;
-    current_frame_vertex[i].y = (FOV * v.y) / (FOV + v.z) + HALF_SCREEN_HEIGHT;
-  }
 
-  if (!is_vertices_equal(0, vertex_cnts, last_frame_vertex, current_frame_vertex))
-  {
-    clear_frame();
-    draw_mesh(tri_cnts, indices, BLACK);
-    delay(16);
-    copy_vertices(0, vertex_cnts, last_frame_vertex, current_frame_vertex);
-  }
+  // if (Serial.available() > 0)
+  // {
+  //   int comming_data = Serial.parseInt();
+  //   if (comming_data >= 1 && comming_data <= 8)
+  //   {
+  //     select_index = comming_data;
+  //     gui();
+  //   }
+  //   if (comming_data == 9)
+  //   {
+  //     clear_frame();
+  //     obj_index = select_index;
+  //   }
+  // }
+  // int start = millis();
+  // m_world = mMultiply(mRotateY(1), m_world);
+  // int vertex_cnts = get_vertex_cnts(obj_index);
+  // int tri_cnts = get_triangle_cnts(obj_index);
+  // Vector3f *pos = get_vertex_pos(obj_index);
+  // Vector3i *indices = get_indices(obj_index);
+  // total_vertex = vertex_cnts;
+  // for (int i = 0; i < vertex_cnts; i++)
+  // {
+  //   Vector3f v = m_mul_v_acc(m_world, pos[i]);
+  //   current_frame_vertex[i].x = ((FOV * v.x) / (FOV + v.z) + HALF_SCREEN_WIDTH) + OFFSET;
+  //   current_frame_vertex[i].y = (FOV * v.y) / (FOV + v.z) + HALF_SCREEN_HEIGHT;
+  // }
 
-  int end = millis();
-  Serial.println(1000 / (end - start));
+  // if (!is_vertices_equal(0, vertex_cnts, last_frame_vertex, current_frame_vertex))
+  // {
+  //   clear_frame();
+  //   draw_mesh(tri_cnts, indices, BLACK);
+  //   delay(16);
+  //   copy_vertices(0, vertex_cnts, last_frame_vertex, current_frame_vertex);
+  // }
+
+  // int end = millis();
+  // Serial.println(1000 / (end - start));
+  int k = analogRead(JOY_STICK_V);
+  int t = analogRead(JOY_STICK_H);
+  Serial.println(k);
+  Serial.println(t);
 }
